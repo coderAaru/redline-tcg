@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redline TCG — High-Octane Trading Card Game</title>
+    <!-- Google Fonts for racing/high-tech UI -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Main Style Sheet -->
+    <link rel="stylesheet" href="css/style.css?v=11">
+</head>
+<body>
+    <!-- Login / Signup Screen Container -->
+    <div id="login-screen">
+        <!-- Rendered dynamically by UI.renderLoginScreen() -->
+    </div>
+
+    <!-- Persistent Utility Header -->
+    <header class="app-header">
+        <div class="header-container">
+            <!-- Brand / Logo -->
+            <div class="brand">
+                <span class="brand-redline">REDLINE</span>
+                <span class="brand-tcg">TCG</span>
+                <div class="rpm-gauge">
+                    <div class="rpm-bar" style="width: 75%;"></div>
+                </div>
+            </div>
+
+            <!-- Main Navigation Links -->
+            <nav class="main-nav">
+                <button class="nav-btn active" id="btn-showroom" data-view="showroom">Showroom</button>
+                <button class="nav-btn" id="btn-garage" data-view="garage-bay">Garage Bay</button>
+                <button class="nav-btn" id="btn-index" data-view="index">Index</button>
+                <button class="nav-btn" id="btn-shop" data-view="performance-shop">Performance Shop</button>
+                <button class="nav-btn" id="btn-coin-store" data-view="coin-store">Coin Store</button>
+                <button class="nav-btn" id="btn-spin" data-view="daily-spin">Daily Spin</button>
+                <button class="nav-btn" id="btn-inventory" data-view="inventory">Inventory</button>
+                <button class="nav-btn" id="btn-quests" data-view="quests">Quests</button>
+                <button class="nav-btn" id="btn-newsroom" data-view="newsroom">Newsroom</button>
+                <button class="nav-btn" id="btn-trade" data-view="trade-terminal">Trade</button>
+                <button class="nav-btn" id="btn-settings" data-view="settings">Settings</button>
+            </nav>
+
+            <!-- Player Utility Tracker -->
+            <div class="player-stats">
+                <div class="stat-badge coins-badge">
+                    <span class="coin-icon">🪙</span>
+                    <span id="player-coins">0</span>
+                    <span class="coin-label">COINS</span>
+                </div>
+                <div class="stat-badge charms-badge" id="header-charms">
+                    <span class="charm-icon">⚡</span>
+                    <span id="active-charm-name">No Active Charm</span>
+                </div>
+                <div class="stat-badge modifiers-badge" id="header-modifiers" style="display: none; align-items: center; gap: 0.35rem; padding: 0.35rem 0.75rem; font-family: var(--font-display); font-size: 0.75rem; font-weight: 700; background: rgba(230, 126, 34, 0.1); border: 1px solid #e67e22; color: #e67e22; border-radius: 6px; box-shadow: 0 0 10px rgba(230, 126, 34, 0.2); white-space: nowrap; margin-right: 0.5rem;">
+                </div>
+                <button class="nav-btn reset-btn" id="btn-show-handbook" onclick="app.showHandbookModal()" style="background: rgba(0, 240, 255, 0.1); border-color: #00f0ff; color: #00f0ff; margin-right: 0.5rem; font-weight: bold; cursor: pointer;">📖 Handbook</button>
+                <button class="nav-btn logout-btn" id="btn-logout-game" onclick="app.logout()" style="background: rgba(231, 76, 60, 0.1); border-color: #e74c3c; color: #e74c3c; font-weight: bold; cursor: pointer;">Exit</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Dynamic Workspace (SPA Viewports) -->
+    <main class="app-workspace">
+        
+        <!-- SECTION 1: THE SHOWROOM (Pack Selection) -->
+        <section id="view-showroom" class="view-panel active">
+            <div class="view-header">
+                <h1 class="view-title">THE SHOWROOM</h1>
+                <p class="view-subtitle">Select a pack to open. Starter pack is free. Earn coins by discovering new cars to unlock advanced packs.</p>
+            </div>
+            <!-- Sponsor / Monetization Ad Banner Zone -->
+            <div class="sponsor-ad-zone" style="max-width: 900px; margin: 1rem auto 2rem auto; border: 1px dashed rgba(0, 240, 255, 0.2); background: rgba(0, 240, 255, 0.02); border-radius: 8px; padding: 1rem; text-align: center; font-family: var(--font-display); font-size: 0.72rem; letter-spacing: 1px; color: var(--text-muted); position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.75rem;">
+                <span style="font-size: 0.6rem; color: var(--neon-cyan); font-weight: bold; border: 1px solid var(--neon-cyan); padding: 2px 6px; border-radius: 4px; text-transform: uppercase;">SPONSOR ADVERTISING ZONE</span>
+                <div id="ad-banner-placeholder" style="width: 100%; max-width: 728px; height: 90px; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; border: 1px solid var(--border-main); color: var(--text-muted); font-size: 0.8rem; font-weight: normal;">
+                    [728x90 Billboard Ad Space - Replace with AdSense / Nitropay code]
+                </div>
+                <div style="margin-top: 0.25rem;">
+                    <button class="cta-btn glow-btn" onclick="app.watchRewardedVideo()" style="padding: 0.5rem 1.5rem; font-size: 0.8rem; font-family: 'Orbitron', sans-serif; background: rgba(46, 204, 113, 0.1); border: 1px solid #2ecc71; color: #2ecc71; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s;" onmouseover="this.style.background='rgba(46, 204, 113, 0.25)'; this.style.boxShadow='0 0 12px rgba(46, 204, 113, 0.4)'" onmouseout="this.style.background='rgba(46, 204, 113, 0.1)'; this.style.boxShadow='none'">
+                        📺 WATCH REWARDED VIDEO AD (+🪙 50 COINS)
+                    </button>
+                </div>
+            </div>
+            <div class="packs-grid" id="showroom-packs-grid">
+                <!-- Pack modules will be dynamically rendered here -->
+            </div>
+        </section>
+
+        <!-- SECTION 2: THE GARAGE BAY (Pack Opening Staging Canvas) -->
+        <section id="view-garage-bay" class="view-panel">
+            <div class="view-header">
+                <h1 class="view-title">THE GARAGE BAY</h1>
+                <p class="view-subtitle">Rip open packs to discover performance vehicles and build your deck.</p>
+            </div>
+            <!-- Sponsor / Monetization Ad Banner Zone -->
+            <div class="sponsor-ad-zone" style="max-width: 900px; margin: 1rem auto 2rem auto; border: 1px dashed rgba(0, 240, 255, 0.2); background: rgba(0, 240, 255, 0.02); border-radius: 8px; padding: 1rem; text-align: center; font-family: var(--font-display); font-size: 0.72rem; letter-spacing: 1px; color: var(--text-muted); position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.5rem;">
+                <span style="font-size: 0.6rem; color: var(--neon-cyan); font-weight: bold; border: 1px solid var(--neon-cyan); padding: 2px 6px; border-radius: 4px; text-transform: uppercase;">SPONSOR ADVERTISING ZONE</span>
+                <div class="ad-banner-placeholder-generic" style="width: 100%; max-width: 728px; height: 90px; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; border: 1px solid var(--border-main); color: var(--text-muted); font-size: 0.8rem; font-weight: normal;">
+                    [728x90 Billboard Ad Space - Replace with AdSense / Nitropay code]
+                </div>
+            </div>
+            
+            <div class="garage-canvas" id="garage-canvas-container">
+                <!-- Staging state: No pack selected -->
+                <div class="garage-empty-state" id="garage-empty-state">
+                    <div class="empty-icon">🏎️</div>
+                    <h3>No Pack Selected</h3>
+                    <p>Head over to the Showroom to choose a card pack or check your inventory.</p>
+                    <button class="cta-btn" onclick="app.changeView('showroom')">Go to Showroom</button>
+                </div>
+
+                <!-- Rip State Canvas (Rendered when a pack is active) -->
+                <div class="pack-ripping-stage hidden" id="pack-ripping-stage">
+                    <div class="pack-wrapper" id="pack-wrapper">
+                        <!-- Pack Art Wrapper -->
+                        <div class="pack-art-card" id="active-pack-art">
+                            <div class="pack-art-inner">
+                                <div class="pack-glow"></div>
+                                <h2 id="active-pack-title">STARTER PACK</h2>
+                                <div class="pack-ripline"></div>
+                                <span class="pack-rip-prompt">CLICK TO RIP</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cards Presentation Canvas -->
+                    <div class="reveal-container hidden" id="reveal-container">
+                        <div class="reveal-prompt-text">TAP CARDS TO FLIP</div>
+                        <div class="revealed-cards-row" id="revealed-cards-row">
+                            <!-- Dynamically generated cards go here -->
+                        </div>
+                        <div class="reveal-actions" style="display: flex; gap: 1rem; justify-content: center; align-items: center;">
+                            <button class="cta-btn secondary-btn hidden" id="btn-reveal-all">Reveal All</button>
+                            <button class="cta-btn glow-btn hidden" id="btn-collect-exit">Collect & Return</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: THE COLLECTION LOG (The Index) -->
+        <section id="view-index" class="view-panel">
+            <div class="view-header">
+                <div class="header-flex">
+                    <div>
+                        <h1 class="view-title">THE INDEX</h1>
+                        <p class="view-subtitle">Your cataloged vehicle collection. Darkened silhouettes represent undiscovered models.</p>
+                    </div>
+                    <!-- Filter and Stats Controls -->
+                    <div class="index-controls">
+                        <!-- Active Multiplier Badge -->
+                        <span id="scrap-multiplier-display" style="font-family: 'Orbitron', sans-serif; font-size: 0.85rem; color: #71717a; border: 1px solid rgba(113, 113, 122, 0.25); background: rgba(39, 39, 42, 0.6); padding: 0.3rem 0.6rem; border-radius: 6px; font-weight: bold; margin-right: 0.5rem; letter-spacing: 0.5px; transition: all 0.3s ease;">
+                            Multiplier: 1.00x
+                        </span>
+                        <!-- Bulk Scrap Container -->
+                        <div class="bulk-scrap-container" style="display: flex; align-items: center; gap: 0.5rem; margin-right: 1rem;">
+                            <button class="cta-btn secondary-btn" id="btn-bulk-scrap" style="padding: 0.5rem 1.25rem; font-size: 0.9rem; font-weight: bold; border-color: #ff3e3e; color: #fff; background: rgba(255, 62, 62, 0.1);" onclick="app.bulkScrapDuplicates()">Scrap All Duplicates</button>
+                            <span id="bulk-scrap-yield" style="font-family: 'Orbitron', sans-serif; font-size: 0.85rem; color: #ff9800; font-weight: bold; min-width: fit-content; text-align: left; white-space: nowrap; margin-left: 0.25rem;">(+0 Coins)</span>
+                        </div>
+
+                        <div class="completion-meter">
+                            <span class="meter-text">Index Completion: <strong id="completion-ratio">0/0</strong></span>
+                            <div class="meter-bar-bg">
+                                <div class="meter-bar-fill" id="completion-fill" style="width: 0%;"></div>
+                            </div>
+                        </div>
+                        <select id="index-pack-filter" class="custom-select">
+                            <option value="all">All Packs</option>
+                            <!-- Filter options populated dynamically -->
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <!-- Sponsor / Monetization Ad Banner Zone -->
+            <div class="sponsor-ad-zone" style="max-width: 900px; margin: 1rem auto 2rem auto; border: 1px dashed rgba(0, 240, 255, 0.2); background: rgba(0, 240, 255, 0.02); border-radius: 8px; padding: 1rem; text-align: center; font-family: var(--font-display); font-size: 0.72rem; letter-spacing: 1px; color: var(--text-muted); position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.5rem;">
+                <span style="font-size: 0.6rem; color: var(--neon-cyan); font-weight: bold; border: 1px solid var(--neon-cyan); padding: 2px 6px; border-radius: 4px; text-transform: uppercase;">SPONSOR ADVERTISING ZONE</span>
+                <div class="ad-banner-placeholder-generic" style="width: 100%; max-width: 728px; height: 90px; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; border: 1px solid var(--border-main); color: var(--text-muted); font-size: 0.8rem; font-weight: normal;">
+                    [728x90 Billboard Ad Space - Replace with AdSense / Nitropay code]
+                </div>
+            </div>
+            
+            <!-- Matrix catalog grid -->
+            <div class="index-grid" id="index-cards-grid">
+                <!-- Vehicle collection matrix rendered dynamically -->
+            </div>
+        </section>
+
+        <!-- SECTION 4: THE PERFORMANCE SHOP -->
+        <section id="view-performance-shop" class="view-panel">
+            <div class="view-header">
+                <h1 class="view-title">THE PERFORMANCE SHOP</h1>
+                <p class="view-subtitle">Unlock advanced pack licenses and purchase Luck Charms to skew RNG tables in your favor.</p>
+            </div>
+            <!-- Sponsor / Monetization Ad Banner Zone -->
+            <div class="sponsor-ad-zone" style="max-width: 900px; margin: 1rem auto 2rem auto; border: 1px dashed rgba(0, 240, 255, 0.2); background: rgba(0, 240, 255, 0.02); border-radius: 8px; padding: 1rem; text-align: center; font-family: var(--font-display); font-size: 0.72rem; letter-spacing: 1px; color: var(--text-muted); position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.5rem;">
+                <span style="font-size: 0.6rem; color: var(--neon-cyan); font-weight: bold; border: 1px solid var(--neon-cyan); padding: 2px 6px; border-radius: 4px; text-transform: uppercase;">SPONSOR ADVERTISING ZONE</span>
+                <div class="ad-banner-placeholder-generic" style="width: 100%; max-width: 728px; height: 90px; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; border: 1px solid var(--border-main); color: var(--text-muted); font-size: 0.8rem; font-weight: normal;">
+                    [728x90 Billboard Ad Space - Replace with AdSense / Nitropay code]
+                </div>
+            </div>
+            
+            <div class="shop-layout">
+                <!-- Pack Licenses Group -->
+                <div class="shop-category">
+                    <h2 class="category-header">🏁 Pack Licensing</h2>
+                    <div class="shop-grid" id="shop-licenses-grid">
+                        <!-- Purchasable pack unlocks render here -->
+                    </div>
+                </div>
+
+                <!-- Luck Charms Group -->
+                <div class="shop-category">
+                    <h2 class="category-header">⚡ Luck Charms & Magnets</h2>
+                    <div class="shop-grid" id="shop-charms-grid">
+                        <!-- Purchasable Luck Charms render here -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 5: THE DAILY SPIN WHEEL -->
+        <section id="view-daily-spin" class="view-panel">
+            <div class="view-header">
+                <h1 class="view-title">DAILY SPIN WHEEL</h1>
+                <p class="view-subtitle">Spin the wheel once every 24 hours to win coin bonuses, charms, free pack openings, or face unlucky penalties!</p>
+            </div>
+            <!-- Sponsor / Monetization Ad Banner Zone -->
+            <div class="sponsor-ad-zone" style="max-width: 900px; margin: 1rem auto 2rem auto; border: 1px dashed rgba(0, 240, 255, 0.2); background: rgba(0, 240, 255, 0.02); border-radius: 8px; padding: 1rem; text-align: center; font-family: var(--font-display); font-size: 0.72rem; letter-spacing: 1px; color: var(--text-muted); position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.5rem;">
+                <span style="font-size: 0.6rem; color: var(--neon-cyan); font-weight: bold; border: 1px solid var(--neon-cyan); padding: 2px 6px; border-radius: 4px; text-transform: uppercase;">SPONSOR ADVERTISING ZONE</span>
+                <div class="ad-banner-placeholder-generic" style="width: 100%; max-width: 728px; height: 90px; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; border: 1px solid var(--border-main); color: var(--text-muted); font-size: 0.8rem; font-weight: normal;">
+                    [728x90 Billboard Ad Space - Replace with AdSense / Nitropay code]
+                </div>
+            </div>
+            
+            <div class="spin-wheel-container" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2rem; margin-top: 2rem; position: relative;">
+                <!-- Wheel Wrapper -->
+                <div class="wheel-wrapper" style="position: relative; width: 330px; height: 330px; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle, #27272a 0%, #0c0c0e 100%); border-radius: 50%; box-shadow: 0 0 30px rgba(0, 240, 255, 0.2), inset 0 0 15px rgba(255,255,255,0.05); padding: 10px;">
+                    <!-- Pointer Arrow -->
+                    <div class="wheel-pointer" style="position: absolute; top: -12px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 25px solid #ff003c; z-index: 10; filter: drop-shadow(0 0 8px #ff003c);"></div>
+                    <!-- Canvas Drawing Area -->
+                    <canvas id="spin-wheel-canvas" width="310" height="310" style="border-radius: 50%; z-index: 1; transition: transform 5s cubic-bezier(0.1, 0.8, 0.1, 1);"></canvas>
+                    <!-- Center Pin -->
+                    <div class="wheel-pin" style="position: absolute; width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #27272a 0%, #09090b 100%); border: 3px solid var(--border-hover); box-shadow: 0 0 15px rgba(0, 240, 255, 0.5); z-index: 5; display: flex; align-items: center; justify-content: center; pointer-events: none;">
+                        <div style="width: 12px; height: 12px; border-radius: 50%; background: #00f0ff; box-shadow: 0 0 8px #00f0ff;"></div>
+                    </div>
+                </div>
+
+                <!-- Controls & Timer -->
+                <div class="wheel-controls" style="display: flex; flex-direction: column; align-items: center; gap: 1rem;">
+                    <button class="cta-btn glow-btn" id="btn-spin-wheel" style="font-size: 1.25rem; padding: 0.8rem 2.5rem;">SPIN WHEEL</button>
+                    <div class="spin-status-text" id="spin-status-text" style="font-family: var(--font-display); font-weight: 600; color: var(--text-muted); font-size: 0.95rem; letter-spacing: 0.5px;"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 6: THE GARAGE INVENTORY -->
+        <section id="view-inventory" class="view-panel">
+            <div class="view-header">
+                <h1 class="view-title">MY GARAGE INVENTORY</h1>
+                <p class="view-subtitle">Store, deploy, and manage your purchased or won Luck Charms and Shop Tickets. Modifiers will sit inactive here until explicitly activated.</p>
+            </div>
+            <!-- Sponsor / Monetization Ad Banner Zone -->
+            <div class="sponsor-ad-zone" style="max-width: 900px; margin: 1rem auto 2rem auto; border: 1px dashed rgba(0, 240, 255, 0.2); background: rgba(0, 240, 255, 0.02); border-radius: 8px; padding: 1rem; text-align: center; font-family: var(--font-display); font-size: 0.72rem; letter-spacing: 1px; color: var(--text-muted); position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.5rem;">
+                <span style="font-size: 0.6rem; color: var(--neon-cyan); font-weight: bold; border: 1px solid var(--neon-cyan); padding: 2px 6px; border-radius: 4px; text-transform: uppercase;">SPONSOR ADVERTISING ZONE</span>
+                <div class="ad-banner-placeholder-generic" style="width: 100%; max-width: 728px; height: 90px; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; border: 1px solid var(--border-main); color: var(--text-muted); font-size: 0.8rem; font-weight: normal;">
+                    [728x90 Billboard Ad Space - Replace with AdSense / Nitropay code]
+                </div>
+            </div>
+            
+            <div class="shop-layout">
+                <!-- Luck Charms Category -->
+                <div class="shop-category">
+                    <h2 class="category-header">⚡ Luck Charms in Storage</h2>
+                    <div class="shop-grid" id="inventory-charms-grid">
+                        <!-- Owned inactive charms render here -->
+                    </div>
+                </div>
+
+                <!-- Utility Tickets Category -->
+                <div class="shop-category">
+                    <h2 class="category-header">🎫 Active & Inactive Utility Tickets</h2>
+                    <div class="shop-grid" id="inventory-tickets-grid">
+                        <!-- Owned tickets render here -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 8: TASKS & QUESTS SYSTEM -->
+        <section id="view-quests" class="view-panel">
+            <div class="view-header">
+                <h1 class="view-title">TASKS & QUESTS</h1>
+                <p class="view-subtitle">Complete daily and weekly operations to earn extra Coin payouts. Rotations are automated.</p>
+            </div>
+            <!-- Sponsor / Monetization Ad Banner Zone -->
+            <div class="sponsor-ad-zone" style="max-width: 900px; margin: 1rem auto 2rem auto; border: 1px dashed rgba(0, 240, 255, 0.2); background: rgba(0, 240, 255, 0.02); border-radius: 8px; padding: 1rem; text-align: center; font-family: var(--font-display); font-size: 0.72rem; letter-spacing: 1px; color: var(--text-muted); position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.5rem;">
+                <span style="font-size: 0.6rem; color: var(--neon-cyan); font-weight: bold; border: 1px solid var(--neon-cyan); padding: 2px 6px; border-radius: 4px; text-transform: uppercase;">SPONSOR ADVERTISING ZONE</span>
+                <div class="ad-banner-placeholder-generic" style="width: 100%; max-width: 728px; height: 90px; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; border: 1px solid var(--border-main); color: var(--text-muted); font-size: 0.8rem; font-weight: normal;">
+                    [728x90 Billboard Ad Space - Replace with AdSense / Nitropay code]
+                </div>
+            </div>
+            
+            <div class="shop-layout" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                <!-- Daily Quests Canvas -->
+                <div class="shop-category" style="margin-bottom: 0;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--border-main); padding-bottom: 0.5rem; margin-bottom: 1rem;">
+                        <h2 class="category-header" style="margin: 0; border: none; padding: 0;">☀️ Daily Quests</h2>
+                        <span id="daily-reset-timer" style="font-family: 'Orbitron', sans-serif; font-size: 0.85rem; color: var(--neon-cyan); font-weight: bold; background: rgba(0, 240, 255, 0.05); padding: 0.2rem 0.5rem; border: 1px solid rgba(0, 240, 255, 0.15); border-radius: 4px;">Resets in: --</span>
+                    </div>
+                    <div id="daily-quests-container" style="display: flex; flex-direction: column; gap: 1rem;">
+                        <!-- Daily quest cards render here -->
+                    </div>
+                </div>
+                
+                <!-- Weekly Quests Canvas -->
+                <div class="shop-category" style="margin-bottom: 0;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--border-main); padding-bottom: 0.5rem; margin-bottom: 1rem;">
+                        <h2 class="category-header" style="margin: 0; border: none; padding: 0;">📅 Weekly Quests</h2>
+                        <span id="weekly-reset-timer" style="font-family: 'Orbitron', sans-serif; font-size: 0.85rem; color: var(--neon-cyan); font-weight: bold; background: rgba(0, 240, 255, 0.05); padding: 0.2rem 0.5rem; border: 1px solid rgba(0, 240, 255, 0.15); border-radius: 4px;">Resets in: --</span>
+                    </div>
+                    <div id="weekly-quests-container" style="display: flex; flex-direction: column; gap: 1rem;">
+                        <!-- Weekly quest cards render here -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 7: LIVE OPS & NEWSROOM -->
+        <section id="view-newsroom" class="view-panel">
+            <div class="view-header">
+                <h1 class="view-title">REDLINE NEWS & EVENTS</h1>
+                <p class="view-subtitle">Stay up-to-date with meta balance shifts, patches, upcoming drops, and active seasonal events.</p>
+            </div>
+            <!-- Sponsor / Monetization Ad Banner Zone -->
+            <div class="sponsor-ad-zone" style="max-width: 900px; margin: 1rem auto 2rem auto; border: 1px dashed rgba(0, 240, 255, 0.2); background: rgba(0, 240, 255, 0.02); border-radius: 8px; padding: 1rem; text-align: center; font-family: var(--font-display); font-size: 0.72rem; letter-spacing: 1px; color: var(--text-muted); position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.5rem;">
+                <span style="font-size: 0.6rem; color: var(--neon-cyan); font-weight: bold; border: 1px solid var(--neon-cyan); padding: 2px 6px; border-radius: 4px; text-transform: uppercase;">SPONSOR ADVERTISING ZONE</span>
+                <div class="ad-banner-placeholder-generic" style="width: 100%; max-width: 728px; height: 90px; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; border: 1px solid var(--border-main); color: var(--text-muted); font-size: 0.8rem; font-weight: normal;">
+                    [728x90 Billboard Ad Space - Replace with AdSense / Nitropay code]
+                </div>
+            </div>
+            
+            <div class="shop-layout" style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
+                <!-- News Feed -->
+                <div class="shop-category" style="margin-bottom: 0;">
+                    <h2 class="category-header">📰 Game Announcement Feed</h2>
+                    <div id="newsroom-feed" style="display: flex; flex-direction: column; gap: 1rem;">
+                        <!-- News posts go here -->
+                    </div>
+                </div>
+                
+                <!-- Seasonal Operations / Spotlight -->
+                <div class="shop-category" style="margin-bottom: 0;">
+                    <h2 class="category-header">📅 Event Spotlight</h2>
+                    <div id="active-events-container" style="display: flex; flex-direction: column; gap: 1rem;">
+                        <!-- Event spotlight tiles go here -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 9: TRADE TERMINAL -->
+        <section id="view-trade-terminal" class="view-panel">
+            <div class="view-header">
+                <h1 class="view-title">TRADE TERMINAL</h1>
+                <p class="view-subtitle">Establish a secure P2P link with other racers to swap duplicate cards and balance offers in real-time.</p>
+            </div>
+            <!-- Sponsor / Monetization Ad Banner Zone -->
+            <div class="sponsor-ad-zone" style="max-width: 900px; margin: 1rem auto 2rem auto; border: 1px dashed rgba(0, 240, 255, 0.2); background: rgba(0, 240, 255, 0.02); border-radius: 8px; padding: 1rem; text-align: center; font-family: var(--font-display); font-size: 0.72rem; letter-spacing: 1px; color: var(--text-muted); position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.5rem;">
+                <span style="font-size: 0.6rem; color: var(--neon-cyan); font-weight: bold; border: 1px solid var(--neon-cyan); padding: 2px 6px; border-radius: 4px; text-transform: uppercase;">SPONSOR ADVERTISING ZONE</span>
+                <div class="ad-banner-placeholder-generic" style="width: 100%; max-width: 728px; height: 90px; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; border: 1px solid var(--border-main); color: var(--text-muted); font-size: 0.8rem; font-weight: normal;">
+                    [728x90 Billboard Ad Space - Replace with AdSense / Nitropay code]
+                </div>
+            </div>
+            
+            <div id="trade-terminal-content">
+                <!-- Staging or Connection area populated dynamically by UI.renderTradeTerminal() -->
+            </div>
+        </section>
+
+        <!-- SECTION 11: COIN STORE -->
+        <section id="view-coin-store" class="view-panel">
+            <div class="view-header">
+                <h1 class="view-title">COIN STORE</h1>
+                <p class="view-subtitle">Purchase dynamic coin packages to power up your vehicle draws. Simulated secure transaction checkout.</p>
+            </div>
+            <!-- Sponsor / Monetization Ad Banner Zone -->
+            <div class="sponsor-ad-zone" style="max-width: 900px; margin: 1rem auto 2rem auto; border: 1px dashed rgba(0, 240, 255, 0.2); background: rgba(0, 240, 255, 0.02); border-radius: 8px; padding: 1rem; text-align: center; font-family: var(--font-display); font-size: 0.72rem; letter-spacing: 1px; color: var(--text-muted); position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.5rem;">
+                <span style="font-size: 0.6rem; color: var(--neon-cyan); font-weight: bold; border: 1px solid var(--neon-cyan); padding: 2px 6px; border-radius: 4px; text-transform: uppercase;">SPONSOR ADVERTISING ZONE</span>
+                <div class="ad-banner-placeholder-generic" style="width: 100%; max-width: 728px; height: 90px; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; border: 1px solid var(--border-main); color: var(--text-muted); font-size: 0.8rem; font-weight: normal;">
+                    [728x90 Billboard Ad Space - Replace with AdSense / Nitropay code]
+                </div>
+            </div>
+            
+            <div id="coin-store-content">
+                <!-- Coin Store dynamically rendered by UI.renderCoinStore() -->
+            </div>
+        </section>
+
+        <!-- SECTION 10: SETTINGS & ACCOUNT PROGRESS -->
+        <section id="view-settings" class="view-panel">
+            <div class="view-header">
+                <h1 class="view-title">SETTINGS & PROGRESS</h1>
+                <p class="view-subtitle">Customize your profile, backup your collection database, and review your milestone completion metrics.</p>
+            </div>
+            
+            <div id="settings-content">
+                <!-- Settings dashboard populated dynamically by UI.renderSettings() -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Global Footer with Copyright -->
+    <footer class="app-footer-bar" style="text-align: center; padding: 1.5rem 0; font-size: 0.72rem; color: var(--text-muted); font-family: var(--font-body); border-top: 1px solid rgba(255, 255, 255, 0.03); background: rgba(12, 12, 14, 0.9); width: 100%;">
+        <div style="max-width: 1400px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 0.75rem; padding: 0 1.5rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; flex-wrap: wrap; gap: 0.5rem;">
+                <span>&copy; 2026 REDLINE TCG. All Rights Reserved.</span>
+                <span style="color: rgba(255,255,255,0.15);">High-Octane Card Collector Edition</span>
+            </div>
+            <p style="font-size: 0.65rem; color: var(--text-muted); margin: 0; line-height: 1.4; text-align: center; max-width: 900px; opacity: 0.75;">
+                <strong>Disclaimer:</strong> REDLINE TCG is an unofficial fan parody card collection game. All fictional brand names, parodies, and statistics represent a simulated gaming context. Performance specs, torque, zero-to-sixty times, and other vehicle metrics are for entertainment purposes only—not all information about these vehicles may be true or accurate.
+            </p>
+        </div>
+    </footer>
+
+    <!-- Global Floating Alerts System -->
+    <div class="alert-toast-container" id="toast-container"></div>
+
+    <!-- Core Javascript Files -->
+    <script src="js/database.js?v=12"></script>
+    <script src="js/math.js?v=12"></script>
+    <script src="js/ui.js?v=12"></script>
+    <script src="js/app.js?v=12"></script>
+</body>
+</html>

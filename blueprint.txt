@@ -1,0 +1,116 @@
+Redline TCG — System Specification & Blueprint
+Master Production Blueprint — Version 10.0
+
+📋 System Overview
+Game Name: Redline TCG
+Platform: Web Application (Responsive, Mobile-friendly Web UI)
+Theme: Dark-mode, high-octane racing aesthetic (Sleek dark grays, carbon textures, neon red accent colors)
+Core Loop: Earn Coins → Buy/Win Modifiers → Manage Inventory → Open Packs (Garage Tax) → Collect Cars → Discover New Cards (Discovery Rewards) → Scrap Duplicates / Complete Sets → Earn More Coins
+
+🖥️ 1. Architecture & Page Layouts
+The application features a persistent, responsive utility navigation architecture connecting seven distinct core interface systems:
+
+Page 1: Pack Selection (The Showroom)
+- Display Logic: Layout architecture grids all available card pack modules, sorted in ascending unlock cost order.
+- Locked Packs: Rendered in a desaturated/monochrome filter overlay. Shows unlock cost alongside a compact, high-contrast dynamic opening fee label inside the footer. Clicking triggers the unlock confirmation gate.
+- Unlocked Packs: Rendered in full color. The footer actions contain a compact green "UNLOCKED" status badge and a compact red "Opening Fee: X Coins" label aligned side-by-side above the "Rip Pack" button. Font sizes and padding are optimized to prevent layout crowding.
+
+Page 2: Pack Opening (The Garage Bay)
+- Staging Canvas: A clean cinematic staging canvas optimized for unpacking randomized assets.
+- Rip Pack Mechanism: Triggers sequential package-tearing animations. Deducts a dynamic sequential opening fee per roll (from 1 Coin up to 17 Coins) depending on the pack's index, waived if a Free Pack Rip Ticket is active or a Tax-Exemption Permit is equipped.
+
+Page 3: The Collection Log (The Index)
+- Catalog Grid: A clean matrix index tracking every vehicle, filtered by pack, ordered from least to most rare.
+- Card Duplicity Tracker: Vehicle asset slots display a persistent integer overlay (e.g., x3) tracking exactly how many duplicates of that specific vehicle card the player currently holds.
+- Discovered Cards: Rendered with full chromatic fidelity, displaying photographic profile assets, official technical specs, set index, and set name.
+- Undiscovered Cards: Hidden behind a solid black matte structural vehicle silhouette mask.
+- Scrap/Sell Economy: Players can liquidate any card from their active inventory. Liquidating the final copy of a vehicle sets its discovery state to false, completely clearing it from their active garage collection.
+- Bulk Scrap Duplicates: A prominent global batch-processing button labeled "Scrap All Duplicates" normalizes duplicate counts to x1. Adjacent to it, a dynamic yield tracker displays the total cumulative Coins the player stands to earn in parentheses—for example: Scrap All Duplicates (+245 Coins).
+
+Page 4: The Performance Shop
+- Currency Counter: Persistent top-of-screen balance tracker.
+- Purchasable SKUs: Permanent unlocks of advanced card pack licenses or single-use Luck Charms.
+- Discount Integration: If a 10% Off Shop Ticket is active, prices are displayed slashed with a strike-through and a yellow discounted cost.
+
+Page 5: My Garage Inventory
+- Storage Canvas: A dedicated screen holding inactive charms and utility tickets purchased from the shop or won from the spin wheel.
+- Manual Deployments: Items sit inactive until manually toggled or equipped. Activating a charm equips it and starts its decay timer/durability countdown. Active tickets (10% Off, Free Pack Rip) apply to the next eligible transaction.
+
+Page 6: Daily Spin Wheel
+- Cooldown Limit: One spin per 24 hours (unless "Spin Again" is rolled).
+- Physics Simulation: CSS-driven smooth rotation, pointing to one of 12 wedges.
+- Outcomes: +10/25/50 Coins, -10/20 Coins, +10 & Spin Again, Free Pack Rip Ticket, Extra Card Charm, Charm Shop Lock (charmsDisabledToday), 10% Off Ticket, Universal Magnet Charm, Flat Tire.
+
+Page 7: Newsroom & Live Events
+- News Feed: Chronological feed displaying game updates, balance shifts, patches, and upcoming drop announcements.
+- Event Spotlights: Live banners tracking calendar-based modifiers (e.g., active countdown for Easter Luck Boost or Halloween Week).
+
+📦 2. Card Pack Structure & Overlap Logic
+Vehicles are strategically mapped to thematic groupings. A single card asset can map into multiple packs concurrently if metadata criteria overlap, maximizing collection options.
+
+🏎️ 3. Card Data Model & Statistics
+The underlying database conforms to a strict structural schema. Pack eligibility lists 17 distinct packs sorted from lowest potential earner to highest potential earner. Mass-market packs target a minimum depth of 40 unique vehicles, and luxury/specialty packs target a minimum depth of 30 unique vehicles.
+
+🎨 4. Pokémon-Inspired Card Layout & Visual Design UI
+To deliver an authentic trading card feeling, the visual layout conforms to:
+- Top Left Field: Manufacturer & Model text.
+- Top Right Field: Uncapped dynamic performance rating gauge (OVR).
+- Center Frame: Graphic asset with border shading and glowing aura matching the rarity tier, plus a duplicate counter overlay.
+- Center Lower Body: A 2x2 technical spec dashboard.
+- Footer: ID identifier left, and catalog set index right.
+
+🧮 5. Overall Score (OVR) Calculation Engine
+Calculated using the formula:
+OVR = horsepower + top_speed + OVR(a) + OVR(q) + OVR(r)
+- OVR(a) = (6 / a) * 100
+- OVR(q) = (14 / q) * 100
+- OVR(r) [Rarity Modifier]: Common (-100), Uncommon (-75), Special (-50), Rare (-25), Very Rare (0), Epic (+25), Legendary (+50), Exotic (+75), Limited Edition (+100).
+
+💎 6. Rarity & Pull Probability Distributions
+- Common (49.40%), Uncommon (26.50%), Special (12.50%), Rare (6.00%), Very Rare (4.00%), Epic (1.20%), Legendary (0.30%), Exotic (0.10%).
+- Magnet charm skews pull rate towards undiscovered cards below Epic rarity with a 35% force roll chance.
+- Honda Pack Adjustments: Epic drops suppressed to 0.50% baseline (and consecutive Epics suppressed to 0% in a single opening sequence), shifting weight to Uncommon and Special.
+- BMW and German Pack Value Compression: Rare/Very Rare/Epic drop odds are significantly compressed and shifted to Uncommon and Special.
+- Supercars Pack "Floor" Restructuring: Features a minimum drop floor of Rare or Very Rare cards. Worst-case scenario pull array yields a liquidation value below the 17 Coins opening fee, preventing infinite rolling loops.
+
+⚙️ 7. Core Game Mechanisms & Economy
+
+Dynamic Discovery Rewards
+Discovering a vehicle for the first time awards Coins mapped to its rarity:
+- Common, Uncommon, Special, Rare, Very Rare: +3 Coins
+- Epic: +10 Coins
+- Legendary: +20 Coins
+- Exotic: +50 Coins
+Duplicates yield 0 Coins on discovery. Free Starter Pack discoveries are hard-capped to a maximum ceiling of 50 Coins total.
+
+Set Completion Bonuses
+Achieving 100% completion of any pack's collection index awards a one-time bonus of +7 Coins. Re-completing after liquidating does not trigger duplicate bonus awards.
+
+Garage Tax (Pack Opening Fee)
+The opening fee scales dynamically by exactly +1 Coin for each sequential pack along the 17-pack progression line (Pack 1: 1 Coin; Pack 2: 2 Coins; ... Pack 17: 17 Coins). Waived if a Free Pack Rip ticket is active or a Tax-Exemption Permit is equipped.
+
+Scrap/Liquidation Economy
+Duplicate cards can be scrapped directly from the Index page:
+- Sell Common: +1 Coin, Uncommon: +2 Coins, Special: +3 Coins, Rare: +10 Coins, Very Rare: +15 Coins, Epic: +25 Coins, Legendary: +50 Coins, Exotic: +100 Coins.
+
+Total Liquidation Logic
+Safeguard rules are removed. The player can scrap any card they own. Liquidating the last copy decrements its count to 0 and marks discovered = false.
+
+Bulk Scrap Duplicates Operation
+A "Scrap All Duplicates" button normalizes all duplicates to x1.
+
+🎒 8. Garage Inventory & Duration Recalibration
+- Epic Catalyst Charm: Grants +1.0% Epic drop boost for exactly 5 active minutes (300s).
+- Legendary Catalyst Charm: Grants +0.5% Legendary drop boost for exactly 5 active minutes (300s).
+- Exotic Catalyst Charm: Grants +0.2% Exotic drop boost for exactly 5 active minutes (300s).
+- Universal Magnet Charm: Extended to exactly 10 active minutes (600s).
+- Manufacturer Brand Charms: Ford and Nissan magnets are completely removed.
+- High-Roller Charm: Suppresses Common drops entirely for next 2 rolls, shifting weight to Uncommon/Special/Rare.
+- Tax-Exemption Permits: Waives opening fee for next 5 rolls.
+
+🏁 9. Interactive Onboarding On-Grid Framework
+Handbook popup overlay displays on first visit and is manual retrievable via header button.
+
+🗓️ 10. Live Events & Special Factors
+- Easter Event: Flat +3% global Luck baseline boost across standard packs.
+- Halloween Event: Halloween news notification and themed coverage.
